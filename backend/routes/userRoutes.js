@@ -12,9 +12,9 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.post("/assign-tracker",authMiddleware, assignTracker);
-router.get("/trackers",authMiddleware, getUserTrackers);
-router.get("/trackers/:id/live", getLiveLocation);
 router.get("/trackers/:id/history", getHistory);
+router.get("/trackers/:id/live", authMiddleware, getLiveLocation);
+router.post("/assign-tracker", authMiddleware, assignTracker);
+router.get("/trackers", authMiddleware, getUserTrackers);
 
 export default router;

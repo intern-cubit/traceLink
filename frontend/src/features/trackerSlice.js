@@ -3,8 +3,8 @@ import { createSlice } from "@reduxjs/toolkit";
 const trackerSlice = createSlice({
     name: "tracker",
     initialState: {
-        trackers: [], // array of { tracker, latest, status }
-        selectedTrackerId: null, // deviceId of the currently selected tracker
+        trackers: [],
+        selectedTrackerId: null,
         loading: false,
         error: null,
     },
@@ -22,21 +22,28 @@ const trackerSlice = createSlice({
             state.selectedTrackerId = action.payload;
         },
         updateTrackerLocation: (state, action) => {
-            const { deviceId, latitude, longitude, timestamp, main, battery } =
+            const { deviceId, latitude, longitude, timestamp, status } =
                 action.payload;
-            const entry = state.trackers.find(
-                (t) => t.tracker.deviceId === deviceId
+            const trackerIndex = state.trackers.findIndex(
+                (t) => t.tracker._id === deviceId
             );
-            if (entry) {
-                entry.latest = {
-                    latitude,
-                    longitude,
-                    timestamp,
-                    main,
-                    battery,
+
+            if (trackerIndex !== -1) {
+                const tracker = state.trackers[trackerIndex];
+
+                tracker.latest = {
+                    ...tracker.latest,
+                    location: {
+                        latitude,
+                        longitude,
+                        timestamp,
+                    },
                 };
-                const diff = Date.now() - new Date(timestamp).getTime();
-                entry.status = diff <= 60000 ? "online" : "offline";
+
+                tracker.status = status;
+                state.trackers[trackerIndex] = tracker;
+            } else {
+                console.warn(`Tracker with ID ${deviceId} not found in state.`);
             }
         },
     },

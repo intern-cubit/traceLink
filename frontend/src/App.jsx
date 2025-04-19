@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 // import AddDevicePage from "./pages/AddDevicePage";
 import RegistrationPage from "./pages/RegistrationPage";
 import Dashboard2 from "./pages/Dashboard2";
+import LiveTrackerMap from "./components/LiveTrackerMap";
 // import { useSelector } from "react-redux";
 
 function App() {
@@ -29,6 +30,10 @@ function App() {
                 <Route
                     path="/dashboard2"
                     element={<Dashboard2 />}
+                />
+                <Route
+                    path="/live-location"
+                    element={<LiveTrackerMap />}
                 />
                 {/* <Route
                     path="/add-device"

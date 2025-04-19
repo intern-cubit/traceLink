@@ -81,8 +81,9 @@ export default function Dashboard() {
                                 <button
                                     key={tracker.deviceId}
                                     onClick={() => {
-                                        dispatch(selectTracker(tracker.deviceId));
+                                        dispatch(selectTracker(tracker._id));
                                         setSidebarOpen(false);
+                                        localStorage.setItem('selectedTrackerId', tracker._id);
                                     }}
                                     className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 transition
                     ${selectedTrackerId === tracker.deviceId
