@@ -49,6 +49,9 @@ io.on("connection", (socket) => {
 app.use(cors());
 app.use(express.json());
 
+app.get("/api/uptimerobot/status", (req, res) => {
+    res.status(200).json({ status: "Server is running" });
+});
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/admin", adminRoutes);

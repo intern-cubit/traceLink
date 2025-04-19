@@ -50,8 +50,6 @@ export const getUserTrackers = async (req, res) => {
                         Date.now() - new Date(latest.timestamp).getTime();
                     status = diff <= 60000 ? "online" : "offline";
                 }
-                console.log("Tracker:", tracker);
-                console.log("Latest Location:", latest);
                 return { tracker, latest, status };
             })
         );
