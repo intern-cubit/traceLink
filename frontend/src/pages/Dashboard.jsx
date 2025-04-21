@@ -16,6 +16,7 @@ export default function Dashboard() {
     const trackers = useSelector((state) => state.tracker.trackers);
     const selectedTrackerId = useSelector((state) => state.tracker.selectedTrackerId);
     console.log("Trackers:", trackers);
+    const BACKEND_URL = process.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     const [tab, setTab] = useState("live");
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -30,7 +31,7 @@ export default function Dashboard() {
         const fetchDevices = async () => {
             dispatch(setLoading(true));
             try {
-                const response = await fetch("http://localhost:5000/api/user/trackers", {
+                const response = await fetch(`${BACKEND_URL}/api/user/trackers`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

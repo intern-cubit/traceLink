@@ -7,6 +7,7 @@ export function useLocationHistory(trackerId, from, to) {
     const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const BACKEND_URL = process.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
         if (!trackerId) return;
@@ -30,7 +31,7 @@ export function useLocationHistory(trackerId, from, to) {
                 //     }
                 // );
                 const res = await fetch(
-                    `http://localhost:5000/api/user/trackers/${trackerId}/history`,
+                    `${BACKEND_URL}/api/user/trackers/${trackerId}/history`,
                     {
                         method: "POST",
                         headers: {
