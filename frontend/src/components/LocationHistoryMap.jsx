@@ -73,7 +73,7 @@ export default function LocationHistoryMap({ trackerId }) {
 
     return (
         <div className="flex flex-col h-full">
-            <div className="flex space-x-4 mb-4">
+            <div className="flex space-x-4 mb-4 z-50">
                 <DatePicker
                     selected={from}
                     onChange={setFrom}
@@ -95,7 +95,7 @@ export default function LocationHistoryMap({ trackerId }) {
                 <MapContainer
                     center={positions[0]}
                     zoom={13}
-                    className="flex-1 rounded-xl overflow-hidden"
+                    className="flex-1 rounded-xl overflow-hidden -z-40"
                     whenCreated={map => map.invalidateSize()}
                 >
                     <ResizeHandler />
