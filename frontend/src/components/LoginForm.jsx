@@ -9,6 +9,7 @@ export default function LoginForm() {
     const [error, setError] = useState("");
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -22,7 +23,7 @@ export default function LoginForm() {
 
         try {
             console.log(form)
-            const response = await fetch("http://localhost:5000/api/auth/login", {
+            const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form),

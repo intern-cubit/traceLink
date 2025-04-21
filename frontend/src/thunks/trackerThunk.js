@@ -1,6 +1,6 @@
 import { setLoading, setError, setTrackers } from "../features/trackerSlice";
 
-const API_BASE = "/api";
+const API_BASE = import.meta.env.VITE_BACKEND_URL;
 
 export const fetchUserTrackers = () => async (dispatch) => {
     dispatch(setLoading(true));

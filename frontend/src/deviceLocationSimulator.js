@@ -1,4 +1,5 @@
-const endpoint = "https://tracelink.onrender.com/api/device/location";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+const endpoint = `${BACKEND_URL}/api/device/location`;
 const deviceId = "1234567890"; // change if needed
 
 // Utility: generate random float in given range

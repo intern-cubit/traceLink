@@ -16,6 +16,7 @@ export function useLiveTracker() {
     const [path, setPath] = useState([]);
     const intervalRef = useRef(null);
     const abortRef = useRef(null);
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
         if (!trackerId) {
@@ -35,7 +36,7 @@ export function useLiveTracker() {
 
             try {
                 console.log(`Fetching live location for tracker: ${trackerId}`);
-                const response = await fetch(`http://localhost:5000/api/user/trackers/${trackerId}/live`, {
+                const response = await fetch(`${BACKEND_URL}/api/user/trackers/${trackerId}/live`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
