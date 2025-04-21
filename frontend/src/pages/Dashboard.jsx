@@ -9,6 +9,7 @@ import {
 import LiveTrackerMap from '../components/LiveTrackerMap';
 import LocationHistoryMap from "../components/LocationHistoryMap";
 
+
 export default function Dashboard() {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
@@ -16,7 +17,7 @@ export default function Dashboard() {
     const trackers = useSelector((state) => state.tracker.trackers);
     const selectedTrackerId = useSelector((state) => state.tracker.selectedTrackerId);
     console.log("Trackers:", trackers);
-    const BACKEND_URL = process.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     const [tab, setTab] = useState("live");
     const [sidebarOpen, setSidebarOpen] = useState(false);
