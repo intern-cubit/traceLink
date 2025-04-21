@@ -17,11 +17,6 @@ import shadowUrl from 'leaflet/dist/images/marker-shadow.png';
 export default function LiveTrackerMap() {
     const { path, latest } = useLiveTracker();
     const position = latest || [0, 0];
-    useEffect(() => {
-        console.log(path)
-        console.log(latest)
-    }
-        , [path, latest]);
     const Recenter = ({ position }) => {
         const map = useMap();
         useEffect(() => {
@@ -36,9 +31,9 @@ export default function LiveTrackerMap() {
     return (
         <div className="w-full h-full rounded-xl overflow-hidden">
             <MapContainer
+                style={{ width: '100%', height: '84vh' }}
                 center={position}
                 zoom={13}
-                className="w-full h-full"
                 whenCreated={map => map.invalidateSize()}
             >
                 <TileLayer

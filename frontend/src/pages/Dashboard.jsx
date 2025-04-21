@@ -1,22 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
-    MapPin, History, PlusCircle, User, Radio, Menu
+    MapPin, History, PlusCircle, User, Radio, Menu, X
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading, setError, setTrackers, selectTracker } from "../features/trackerSlice";
+import {
+    setLoading, setError, setTrackers, selectTracker
+} from "../features/trackerSlice";
 import LiveTrackerMap from '../components/LiveTrackerMap';
+import LocationHistoryMap from "../components/LocationHistoryMap";
 
 export default function Dashboard() {
     const dispatch = useDispatch();
-    const token = useSelector(state => state.auth.token);
-    const user = useSelector(state => state.auth.user);
-    const trackers = useSelector(state => state.tracker.trackers);
-    const selectedTrackerId = useSelector(state => state.tracker.selectedTrackerId);
-    const selectedDevice = trackers.find(t => t.tracker._id === selectedTrackerId) || null;
+    const token = useSelector((state) => state.auth.token);
+    const user = useSelector((state) => state.auth.user);
+    const trackers = useSelector((state) => state.tracker.trackers);
+    const selectedTrackerId = useSelector((state) => state.tracker.selectedTrackerId);
+    console.log("Trackers:", trackers);
 
-    const [tab, setTab] = React.useState("live");
-    const [sidebarOpen, setSidebarOpen] = React.useState(false);
+    const [tab, setTab] = useState("live");
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
+    // ✅ UseMemo avoids unnecessary recalculations every render
+    const selectedDevice = useMemo(() => {
+        return trackers.find(t => t.tracker._id === selectedTrackerId) || null;
+    }, [trackers, selectedTrackerId]);
+
+    // ✅ useCallback for fetchDevices, declared once and stable
     useEffect(() => {
         const fetchDevices = async () => {
             dispatch(setLoading(true));
@@ -35,6 +44,7 @@ export default function Dashboard() {
                 }
                 dispatch(setTrackers(data));
                 localStorage.setItem('trackers', JSON.stringify(data));
+
                 if (Array.isArray(data) && data.length > 0) {
                     dispatch(selectTracker(data[0].tracker._id));
                 }
@@ -44,33 +54,44 @@ export default function Dashboard() {
                 dispatch(setLoading(false));
             }
         };
+
         if (token) fetchDevices();
     }, [dispatch, token]);
 
     return (
         <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+
             {/* Mobile Header */}
-            <div className="md:hidden flex items-center justify-between bg-white border-b p-4 shadow-md z-10">
+            <header className="md:hidden flex items-center justify-between bg-white border-b p-4 shadow-sm">
                 <h2 className="text-xl font-bold text-blue-600">TrackLink</h2>
                 <button
-                    onClick={() => setSidebarOpen(!sidebarOpen)}
-                    className="text-gray-600 hover:text-blue-600"
+                    onClick={() => setSidebarOpen(true)}
+                    className="text-gray-700 hover:text-blue-600 focus:outline-none"
+                    aria-label="Open menu"
                 >
                     <Menu className="w-6 h-6" />
                 </button>
-            </div>
+            </header>
 
             {/* Sidebar */}
             <aside
-                className={`bg-white border-r shadow-md w-full md:w-64 flex-col transition-all duration-300 ease-in-out z-20
-                ${sidebarOpen ? 'flex fixed top-0 left-0 h-full' : 'hidden'} md:flex`}
+                className={`bg-white border-r shadow-md w-full md:w-64 flex-col z-50 fixed inset-y-0 left-0 transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 md:static md:flex`}
             >
-                <div className="p-6 border-b">
+                <div className="p-6 border-b flex items-center justify-between md:block">
                     <h2 className="text-2xl font-bold text-blue-600">TrackLink</h2>
-                    <div className="mt-2 text-sm text-gray-600 flex items-center gap-2">
-                        <User className="w-4 h-4" /> {user.fullName}
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="md:hidden text-gray-600 hover:text-blue-600"
+                        aria-label="Close menu"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+                    <div className="mt-2 text-sm text-gray-600 flex items-center gap-2 md:mt-3">
+                        <User className="w-4 h-4" /> {user?.fullName}
                     </div>
                 </div>
+
                 <div className="flex-1 p-4 overflow-y-auto space-y-6">
                     <div>
                         <p className="text-xs uppercase font-semibold text-gray-400 mb-2">Devices</p>
@@ -84,7 +105,7 @@ export default function Dashboard() {
                                         localStorage.setItem('selectedTrackerId', tracker._id);
                                     }}
                                     className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 font-medium transition
-                                        ${selectedTrackerId === tracker._id
+                    ${selectedTrackerId === tracker._id
                                             ? 'bg-blue-100 text-blue-700'
                                             : 'hover:bg-gray-100 text-gray-700'}`}
                                 >
@@ -92,17 +113,21 @@ export default function Dashboard() {
                                 </button>
                             ))}
                         </div>
-                        <button className="mt-4 text-sm text-blue-600 hover:underline flex items-center gap-1">
+                        <button
+                            onClick={() => alert("Add device functionality coming soon!")}
+                            className="mt-4 text-sm text-blue-600 hover:underline flex items-center gap-1"
+                        >
                             <PlusCircle className="w-4 h-4" /> Add Device
                         </button>
                     </div>
+
                     <div>
                         <p className="text-xs uppercase font-semibold text-gray-400 mb-2">Tracking</p>
                         <div className="space-y-2">
                             <button
                                 onClick={() => { setTab('live'); setSidebarOpen(false); }}
                                 className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 font-medium transition
-                                    ${tab === 'live'
+                  ${tab === 'live'
                                         ? 'bg-blue-100 text-blue-700'
                                         : 'hover:bg-gray-100 text-gray-700'}`}
                             >
@@ -111,7 +136,7 @@ export default function Dashboard() {
                             <button
                                 onClick={() => { setTab('history'); setSidebarOpen(false); }}
                                 className={`w-full text-left px-3 py-2 rounded-md text-sm flex items-center gap-2 font-medium transition
-                                    ${tab === 'history'
+                  ${tab === 'history'
                                         ? 'bg-blue-100 text-blue-700'
                                         : 'hover:bg-gray-100 text-gray-700'}`}
                             >
@@ -122,22 +147,33 @@ export default function Dashboard() {
                 </div>
             </aside>
 
+            {/* Overlay for mobile */}
+            {sidebarOpen && (
+                <div
+                    onClick={() => setSidebarOpen(false)}
+                    className="fixed inset-0 bg-black opacity-30 md:hidden z-30"
+                />
+            )}
+
             {/* Main Content */}
-            <main className="flex-1 flex flex-col p-4 sm:p-6">
+            <main className="flex-1 bg-gray-50 flex flex-col p-4 sm:p-6 overflow-y-auto">
                 <div className="mb-4">
                     <h3 className="text-xl font-semibold text-gray-800">
-                        {tab === 'live' ? 'Live Location' : 'Location History'}
+                        {tab === "live" ? "Live Location" : "Location History"}
                     </h3>
                     <p className="text-sm text-gray-500">
-                        Tracking: {selectedDevice?.tracker.vehicleType || '-'} ({selectedDevice?.tracker.deviceId || '-'})
+                        Tracking: {selectedDevice?.tracker.vehicleType || "-"} ({selectedDevice?.tracker.deviceId || "-"})
                     </p>
                 </div>
-                <div className="flex-1 overflow-hidden rounded-xl bg-white shadow-lg">
-                    {tab === 'live' ? (
+
+                <div className="flex-1 rounded-xl bg-transparent shadow-lg overflow-hidden">
+                    {tab === "live" ? (
                         <LiveTrackerMap />
+                    ) : selectedTrackerId ? (
+                        <LocationHistoryMap trackerId={selectedTrackerId} />
                     ) : (
                         <div className="flex items-center justify-center h-full text-gray-400 text-center px-4">
-                            {selectedDevice ? 'Location History coming soon' : 'Select a device to view location history'}
+                            Select a device to view location history
                         </div>
                     )}
                 </div>

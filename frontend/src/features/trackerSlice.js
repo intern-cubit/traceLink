@@ -23,8 +23,6 @@ const trackerSlice = createSlice({
             state.selectedTrackerId = action.payload;
         },
         updateTrackerLocation: (state, action) => {
-            console.log('[trackerSlice] updateTrackerLocation payload:', action.payload);
-            console.log('[trackerSlice] before update, trackers:', state.trackers);
             const { deviceId, latitude, longitude, timestamp, status } =
                 action.payload;
 

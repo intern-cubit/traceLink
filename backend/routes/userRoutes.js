@@ -12,7 +12,7 @@ const router = Router();
 
 router.use(authMiddleware);
 
-router.get("/trackers/:id/history", getHistory);
+router.post("/trackers/:id/history", getHistory);
 router.get("/trackers/:id/live", authMiddleware, getLiveLocation);
 router.post("/assign-tracker", authMiddleware, assignTracker);
 router.get("/trackers", authMiddleware, getUserTrackers);
