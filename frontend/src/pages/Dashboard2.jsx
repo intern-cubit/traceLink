@@ -10,7 +10,7 @@ import { io } from "socket.io-client";
 export default function Dashboard2() {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.auth.user);
-    console.log(user)
+    // console.log(user)
     const { trackers, loading, error, selectedTrackerId } = useSelector((state) => state.tracker);
     const [activeTab, setActiveTab] = useState("live");
 

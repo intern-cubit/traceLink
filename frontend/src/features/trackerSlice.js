@@ -8,6 +8,7 @@ const trackerSlice = createSlice({
         loading: false,
         error: null,
     },
+
     reducers: {
         setLoading: (state, action) => {
             state.loading = action.payload;
@@ -22,11 +23,14 @@ const trackerSlice = createSlice({
             state.selectedTrackerId = action.payload;
         },
         updateTrackerLocation: (state, action) => {
+            console.log('[trackerSlice] updateTrackerLocation payload:', action.payload);
+            console.log('[trackerSlice] before update, trackers:', state.trackers);
             const { deviceId, latitude, longitude, timestamp, status } =
                 action.payload;
-            const trackerIndex = state.trackers.findIndex(
-                (t) => t.tracker._id === deviceId
-            );
+
+            const trackerIndex = state.trackers.findIndex((t) => {
+                t.tracker._id === deviceId;
+            });
 
             if (trackerIndex !== -1) {
                 const tracker = state.trackers[trackerIndex];
