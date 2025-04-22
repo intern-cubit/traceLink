@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -50,7 +50,7 @@ const createColoredLocationIcon = (color) => {
 
 function ResizeHandler() {
     const map = useMap();
-    React.useEffect(() => {
+    useEffect(() => {
         const onResize = () => map.invalidateSize();
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
@@ -72,48 +72,64 @@ export default function LocationHistoryMap({ trackerId }) {
     const intermediateIcon = createColoredLocationIcon('#FFA500'); // orange-ish
 
     return (
-        <div className="flex flex-col h-full">
-            <div className="flex space-x-4 mb-4 z-50">
-                <DatePicker
-                    selected={from}
-                    onChange={setFrom}
-                    showTimeSelect
-                    placeholderText="From…"
-                />
-                <DatePicker
-                    selected={to}
-                    onChange={setTo}
-                    showTimeSelect
-                    placeholderText="To…"
-                />
+        <div className="flex flex-col h-full relative">
+            {/* Date Picker Overlay Section */}
+            <div className="absolute top-4 right-4 z-50 flex flex-col lg:flex-row flex-wrap items-center gap-4">
+                <div className="flex flex-col">
+                    <label className="hidden lg:block text-sm mb-1 text-gray-700 font-medium">Start Date & Time</label>
+                    <DatePicker
+                        selected={from}
+                        onChange={(date) => setFrom(date)}
+                        placeholderText='start date'
+                        showTimeSelect
+                        timeIntervals={15} // Adjust time intervals as needed
+                        dateFormat="Pp" // Formats the date and time (e.g., 03/20/2025, 2:30 PM)
+                        className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
+
+                <div className="flex flex-col">
+                    <label className="hidden lg:block text-sm mb-1 text-gray-700 font-medium">End Date & Time</label>
+                    <DatePicker
+                        selected={to}
+                        onChange={(date) => setTo(date)}
+                        placeholderText='end date'
+                        showTimeSelect
+                        timeIntervals={15} // Adjust time intervals as needed
+                        dateFormat="Pp" // Formats the date and time (e.g., 03/20/2025, 2:30 PM)
+                        className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                </div>
             </div>
 
             {loading && <p>🔄 Loading history…</p>}
             {error && <p className="text-red-600">⚠️ {error}</p>}
 
             {!loading && !error && positions.length > 0 ? (
-                <MapContainer
-                    center={positions[0]}
-                    zoom={13}
-                    className="flex-1 rounded-xl overflow-hidden -z-40"
-                    whenCreated={map => map.invalidateSize()}
-                >
-                    <ResizeHandler />
-                    <TileLayer
-                        attribution="© OpenStreetMap contributors"
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    <Polyline positions={positions} weight={4} />
-                    {positions.map((pos, idx) => {
-                        if (idx === 0) {
-                            return <Marker key={idx} position={pos} icon={latestIcon} />;
-                        } else if (idx === positions.length - 1) {
-                            return <Marker key={idx} position={pos} icon={oldestIcon} />;
-                        } else {
-                            return <Marker key={idx} position={pos} icon={intermediateIcon} />;
-                        }
-                    })}
-                </MapContainer>
+                <div style={{ height: '100%' }}>
+                    <MapContainer
+                        center={positions[0]}
+                        zoom={13}
+                        style={{ height: '100%', width: '100%', zIndex: 0 }}
+                        whenCreated={map => map.invalidateSize()}
+                    >
+                        <ResizeHandler />
+                        <TileLayer
+                            attribution="© OpenStreetMap contributors"
+                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        />
+                        <Polyline positions={positions} weight={4} />
+                        {positions.map((pos, idx) => {
+                            if (idx === 0) {
+                                return <Marker key={idx} position={pos} icon={latestIcon} />;
+                            } else if (idx === positions.length - 1) {
+                                return <Marker key={idx} position={pos} icon={oldestIcon} />;
+                            } else {
+                                return <Marker key={idx} position={pos} icon={intermediateIcon} />;
+                            }
+                        })}
+                    </MapContainer>
+                </div>
             ) : (
                 !loading && !error && (
                     <div className="flex-1 flex items-center justify-center text-gray-500">

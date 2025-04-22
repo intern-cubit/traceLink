@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "concurrently \"vite\" \"node ./src/deviceLocationSimulator.js\"",
+        "dev" : "vite",
         "simulate": "node deviceLocationSimulator.js",
         "build": "vite build",
         "lint": "eslint .",

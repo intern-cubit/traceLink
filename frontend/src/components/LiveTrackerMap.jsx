@@ -31,7 +31,7 @@ export default function LiveTrackerMap() {
     return (
         <div className="w-full h-full rounded-xl overflow-hidden">
             <MapContainer
-                style={{ width: '100%', height: '84vh' }}
+                style={{ width: '100%', height: '100%' }}
                 center={position}
                 zoom={13}
                 whenCreated={map => map.invalidateSize()}

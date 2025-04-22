@@ -9,7 +9,6 @@ import {
 import LiveTrackerMap from '../components/LiveTrackerMap';
 import LocationHistoryMap from "../components/LocationHistoryMap";
 
-
 export default function Dashboard() {
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
@@ -27,7 +26,6 @@ export default function Dashboard() {
         return trackers.find(t => t.tracker._id === selectedTrackerId) || null;
     }, [trackers, selectedTrackerId]);
 
-    // ✅ useCallback for fetchDevices, declared once and stable
     useEffect(() => {
         const fetchDevices = async () => {
             dispatch(setLoading(true));
@@ -158,17 +156,19 @@ export default function Dashboard() {
             )}
 
             {/* Main Content */}
-            <main className="flex-1 bg-gray-50 flex flex-col p-4 sm:p-6 overflow-y-auto">
-                <div className="mb-4">
-                    <h3 className="text-xl font-semibold text-gray-800">
+            <main className="flex-1 bg-gray-50 relative overflow-hidden">
+                {/* Overlayed Header Text */}
+                <div className="hidden md:block absolute top-4 left-4 z-10 bg-white/70 backdrop-blur-md px-4 py-2 rounded-lg shadow text-sm">
+                    <h3 className="text-lg font-semibold text-gray-800">
                         {tab === "live" ? "Live Location" : "Location History"}
                     </h3>
-                    <p className="text-sm text-gray-500">
-                        Tracking: {selectedDevice?.tracker.vehicleType || "-"} ({selectedDevice?.tracker.deviceId || "-"})
+                    <p className="text-gray-600">
+                        Tracking: {selectedDevice?.tracker.vehicleType || "-"} ({selectedDevice?.tracker.deviceId || "-"} )
                     </p>
                 </div>
 
-                <div className="flex-1 rounded-xl bg-transparent shadow-lg overflow-hidden">
+                {/* Map */}
+                <div className="absolute inset-0 z-0">
                     {tab === "live" ? (
                         <LiveTrackerMap />
                     ) : selectedTrackerId ? (
