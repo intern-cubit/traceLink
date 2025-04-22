@@ -16,6 +16,9 @@ export function useLiveTracker() {
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
+        setPath([]);
+        setLatest(null);
+
         if (!trackerId) {
             console.warn("No trackerId set. Skipping live tracker polling.");
             return;
