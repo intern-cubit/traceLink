@@ -7,6 +7,7 @@ import {
     TileLayer,
     Polyline,
     Marker,
+    Popup,
     useMap,
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -17,7 +18,7 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import iconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-// Patch Leaflet’s defaults once, at module load time
+// Patch Leaflet’s default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconUrl,
@@ -25,7 +26,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl
 });
 
-// Helper: Create a custom location (pin) icon using inline SVG with the specified color
+// 🎨 Helper: Create a custom SVG-based location icon with color
 const createColoredLocationIcon = (color) => {
     const svgIcon = `
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">
@@ -63,17 +64,15 @@ export default function LocationHistoryMap({ trackerId }) {
     const [to, setTo] = useState(null);
 
     const { history, loading, error } = useLocationHistory(trackerId, from, to);
-
-    // extract [lat, lng]
     const positions = history.map(({ latitude, longitude }) => [latitude, longitude]);
 
-    const latestIcon = createColoredLocationIcon('red');    // latest (first item)
-    const oldestIcon = createColoredLocationIcon('blue');   // oldest (last item)
-    const intermediateIcon = createColoredLocationIcon('#FFA500'); // orange-ish
+    const latestIcon = createColoredLocationIcon('red');
+    const oldestIcon = createColoredLocationIcon('blue');
+    const intermediateIcon = createColoredLocationIcon('#FFA500');
 
     return (
         <div className="flex flex-col h-full relative">
-            {/* Date Picker Overlay Section */}
+            {/* Date Picker Overlay */}
             <div className="absolute top-4 right-4 z-50 flex flex-col lg:flex-row flex-wrap items-center gap-4">
                 <div className="flex flex-col">
                     <label className="hidden lg:block text-sm mb-1 text-gray-700 font-medium">Start Date & Time</label>
@@ -82,8 +81,8 @@ export default function LocationHistoryMap({ trackerId }) {
                         onChange={(date) => setFrom(date)}
                         placeholderText='start date'
                         showTimeSelect
-                        timeIntervals={15} // Adjust time intervals as needed
-                        dateFormat="Pp" // Formats the date and time (e.g., 03/20/2025, 2:30 PM)
+                        timeIntervals={15}
+                        dateFormat="Pp"
                         className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
@@ -95,8 +94,8 @@ export default function LocationHistoryMap({ trackerId }) {
                         onChange={(date) => setTo(date)}
                         placeholderText='end date'
                         showTimeSelect
-                        timeIntervals={15} // Adjust time intervals as needed
-                        dateFormat="Pp" // Formats the date and time (e.g., 03/20/2025, 2:30 PM)
+                        timeIntervals={15}
+                        dateFormat="Pp"
                         className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                 </div>
@@ -119,14 +118,26 @@ export default function LocationHistoryMap({ trackerId }) {
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
                         <Polyline positions={positions} weight={4} />
-                        {positions.map((pos, idx) => {
-                            if (idx === 0) {
-                                return <Marker key={idx} position={pos} icon={latestIcon} />;
-                            } else if (idx === positions.length - 1) {
-                                return <Marker key={idx} position={pos} icon={oldestIcon} />;
-                            } else {
-                                return <Marker key={idx} position={pos} icon={intermediateIcon} />;
-                            }
+                        {history.map((point, idx) => {
+                            const pos = [point.latitude, point.longitude];
+                            const icon =
+                                idx === 0 ? latestIcon :
+                                    idx === history.length - 1 ? oldestIcon :
+                                        intermediateIcon;
+
+                            return (
+                                <Marker key={idx} position={pos} icon={icon}>
+                                    <Popup>
+                                        <div className="space-y-1 text-sm">
+                                            <p><strong>📍 Time:</strong> {new Date(point.timestamp).toLocaleString()}</p>
+                                            <p><strong>🧭 Lat:</strong> {point.latitude.toFixed(5)}</p>
+                                            <p><strong>🧭 Lng:</strong> {point.longitude.toFixed(5)}</p>
+                                            <p><strong>🔌 Main:</strong> {point.main}</p>
+                                            <p><strong>🔋 Battery:</strong> {point.battery}</p>
+                                        </div>
+                                    </Popup>
+                                </Marker>
+                            );
                         })}
                     </MapContainer>
                 </div>
