@@ -80,12 +80,9 @@ export const getLiveLocation = async (req, res) => {
 
 // Get historical data for playback (with optional time range)
 export const getHistory = async (req, res) => {
-    console.log("History Playback request:", req.body);
     const { id } = req.params;
     const { from, to } = req.body;
     const filter = { trackerId: id };
-    console.log("History filter:", filter);
-    console.log("From:", from, "To:", to);
 
     if (from || to) {
         filter.timestamp = {};
@@ -96,7 +93,6 @@ export const getHistory = async (req, res) => {
         const history = await LocationHistory.find(filter).sort({
             timestamp: 1,
         });
-        console.log(history);
         res.json(history);
     } catch (error) {
         console.error("History Playback error:", error);

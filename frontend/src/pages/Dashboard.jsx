@@ -16,7 +16,6 @@ export default function Dashboard() {
     const user = useSelector((state) => state.auth.user);
     const trackers = useSelector((state) => state.tracker.trackers);
     const selectedTrackerId = useSelector((state) => state.tracker.selectedTrackerId);
-    console.log("Trackers:", trackers);
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
     const navigate = useNavigate();
 

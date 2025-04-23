@@ -36,7 +36,6 @@ export const signup = async (req, res) => {
 export const login = async (req, res) => {
     const { identifier, password } = req.body;
     try {
-        console.log(identifier, password)
         const user = await User.findOne({ $or: [{ email: identifier }, { username: identifier }] });
         if (!identifier || !password) {
             return res.status(400).json({ message: "All fields are required" });

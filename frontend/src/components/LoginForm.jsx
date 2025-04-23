@@ -22,14 +22,12 @@ export default function LoginForm() {
         dispatch(loginStart());
 
         try {
-            console.log(form)
             const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(form),
             });
             const data = await response.json();
-            console.log(data)
             if (!response.ok) {
                 throw new Error(data.message || "Login failed.");
             }
