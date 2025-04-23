@@ -1,3 +1,5 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* "dev": "concurrently \"vite\" \"node ./src/deviceLocationSimulator.js\"", */

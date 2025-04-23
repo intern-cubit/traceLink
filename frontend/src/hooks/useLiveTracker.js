@@ -13,7 +13,7 @@ export function useLiveTracker() {
     const [latest, setLatest] = useState(null);
     const intervalRef = useRef(null);
     const abortRef = useRef(null);
-    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+    const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
 
     useEffect(() => {
         setPath([]);
@@ -79,7 +79,7 @@ export function useLiveTracker() {
         };
 
         fetchLive();
-        intervalRef.current = setInterval(fetchLive, 5000);
+        intervalRef.current = setInterval(fetchLive, 60000);
 
         return () => {
             clearInterval(intervalRef.current);

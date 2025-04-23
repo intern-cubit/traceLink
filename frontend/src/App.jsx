@@ -1,16 +1,15 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
-// import SignupPage from "./pages/SignupPage";
 import Dashboard from "./pages/Dashboard";
-// import AddDevicePage from "./pages/AddDevicePage";
+import AddDevicePage from "./pages/AddDevicePage";
 import RegistrationPage from "./pages/RegistrationPage";
-import Dashboard2 from "./pages/Dashboard2";
 import LiveTrackerMap from "./components/LiveTrackerMap";
-// import { useSelector } from "react-redux";
+import { useSelector } from "react-redux";
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
-    // const isAuth = useSelector((s) => s.auth.isAuthenticated);
+    const isAuth = useSelector((s) => s.auth.isAuthenticated);
     return (
         <BrowserRouter>
             <Routes>
@@ -28,17 +27,17 @@ function App() {
                     element={<Dashboard />}
                 />
                 <Route
-                    path="/dashboard2"
-                    element={<Dashboard2 />}
-                />
-                <Route
                     path="/live-location"
                     element={<LiveTrackerMap />}
                 />
-                {/* <Route
+                <Route
                     path="/add-device"
-                    element={isAuth ? <AddDevicePage /> : <Navigate to="/login" />}
-                /> */}
+                    element={<AddDevicePage />}
+                />
+                <Route
+                    path="/admin/dashboard"
+                    element={ <AdminDashboard /> }
+                />
             </Routes>
         </BrowserRouter>
     );

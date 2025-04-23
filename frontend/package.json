@@ -4,7 +4,7 @@
     "version": "0.0.0",
     "type": "module",
     "scripts": {
-        "dev": "concurrently \"vite\" \"node ./src/deviceLocationSimulator.js\"",
+        "dev": "vite",
         "simulate": "node deviceLocationSimulator.js",
         "build": "vite build",
         "lint": "eslint .",
@@ -18,6 +18,7 @@
         "react": "^19.0.0",
         "react-datepicker": "^8.3.0",
         "react-dom": "^19.0.0",
+        "react-hot-toast": "^2.5.2",
         "react-leaflet": "^5.0.0",
         "react-redux": "^9.2.0",
         "react-router-dom": "^7.5.1",

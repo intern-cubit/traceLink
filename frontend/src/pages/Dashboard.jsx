@@ -8,6 +8,7 @@ import {
 } from "../features/trackerSlice";
 import LiveTrackerMap from '../components/LiveTrackerMap';
 import LocationHistoryMap from "../components/LocationHistoryMap";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
     const dispatch = useDispatch();
@@ -17,6 +18,7 @@ export default function Dashboard() {
     const selectedTrackerId = useSelector((state) => state.tracker.selectedTrackerId);
     console.log("Trackers:", trackers);
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
+    const navigate = useNavigate();
 
     const [tab, setTab] = useState("live");
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -114,7 +116,9 @@ export default function Dashboard() {
                             ))}
                         </div>
                         <button
-                            onClick={() => alert("Add device functionality coming soon!")}
+                            onClick={() => {
+                                navigate("/add-device");
+                            }}
                             className="mt-4 text-sm text-blue-600 hover:underline flex items-center gap-1"
                         >
                             <PlusCircle className="w-4 h-4" /> Add Device
