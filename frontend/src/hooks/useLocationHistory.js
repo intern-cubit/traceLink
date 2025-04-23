@@ -21,15 +21,6 @@ export function useLocationHistory(trackerId, from, to) {
                 if (from) params.append("from", from.toISOString());
                 if (to) params.append("to", to.toISOString());
 
-                // const res = await fetch(
-                //     `/api/user/trackers/${trackerId}/history?${params.toString()}`,
-                //     {
-                //         headers: {
-                //             "Content-Type": "application/json",
-                //             authorization: `Bearer ${token}`,
-                //         },
-                //     }
-                // );
                 const res = await fetch(
                     `${BACKEND_URL}/api/user/trackers/${trackerId}/history`,
                     {
@@ -46,6 +37,7 @@ export function useLocationHistory(trackerId, from, to) {
                 );
 
                 const data = await res.json();
+                console.log("History data:", data); 
                 if (!res.ok)
                     throw new Error(data.message || "Failed to fetch history");
                 setHistory(data);
@@ -53,6 +45,7 @@ export function useLocationHistory(trackerId, from, to) {
                 setError(err.message);
             } finally {
                 setLoading(false);
+                console.log(loading)
             }
         };
 

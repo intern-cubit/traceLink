@@ -9,6 +9,7 @@ import {
     Marker,
     Popup,
     useMap,
+    CircleMarker
 } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -26,7 +27,7 @@ L.Icon.Default.mergeOptions({
     shadowUrl
 });
 
-// 🎨 Helper: Create a custom SVG-based location icon with color
+// Helper: SVG marker icon with custom color
 const createColoredLocationIcon = (color) => {
     const svgIcon = `
         <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">
@@ -49,6 +50,7 @@ const createColoredLocationIcon = (color) => {
     });
 };
 
+// Map resize handler
 function ResizeHandler() {
     const map = useMap();
     useEffect(() => {
@@ -59,95 +61,117 @@ function ResizeHandler() {
     return null;
 }
 
+// Utility: Convert date to start and end of day
+const startOfDay = (date) => new Date(date.setHours(0, 0, 0, 0));
+const endOfDay = (date) => new Date(date.setHours(23, 59, 59, 999));
+
 export default function LocationHistoryMap({ trackerId }) {
+    const [selectedDate, setSelectedDate] = useState(null);
     const [from, setFrom] = useState(null);
     const [to, setTo] = useState(null);
 
-    const { history, loading, error } = useLocationHistory(trackerId, from, to);
+    // This should always run, regardless of selectedDate
+    const { history, loading, error } = useLocationHistory(
+        trackerId,
+        from,
+        to
+    );
+
+    // Only update map positions if there's valid history
     const positions = history.map(({ latitude, longitude }) => [latitude, longitude]);
 
     const latestIcon = createColoredLocationIcon('red');
-    const oldestIcon = createColoredLocationIcon('blue');
-    const intermediateIcon = createColoredLocationIcon('#FFA500');
+    const oldestIcon = createColoredLocationIcon('green');
 
     return (
         <div className="flex flex-col h-full relative">
             {/* Date Picker Overlay */}
-            <div className="absolute top-4 right-4 z-50 flex flex-col lg:flex-row flex-wrap items-center gap-4">
-                <div className="flex flex-col">
-                    <label className="hidden lg:block text-sm mb-1 text-gray-700 font-medium">Start Date & Time</label>
-                    <DatePicker
-                        selected={from}
-                        onChange={(date) => setFrom(date)}
-                        placeholderText='start date'
-                        showTimeSelect
-                        timeIntervals={15}
-                        dateFormat="Pp"
-                        className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                </div>
-
-                <div className="flex flex-col">
-                    <label className="hidden lg:block text-sm mb-1 text-gray-700 font-medium">End Date & Time</label>
-                    <DatePicker
-                        selected={to}
-                        onChange={(date) => setTo(date)}
-                        placeholderText='end date'
-                        showTimeSelect
-                        timeIntervals={15}
-                        dateFormat="Pp"
-                        className="border px-3 lg:py-2 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                    />
-                </div>
+            <div className="absolute top-4 right-4 z-50 flex flex-col items-center gap-2">
+                <label className="hidden md:block text-sm text-gray-700 font-medium">Select Date</label>
+                <DatePicker
+                    selected={selectedDate}
+                    onChange={
+                        (date) => {
+                            setSelectedDate(date);
+                            setFrom(date ? startOfDay(new Date(date)) : null);
+                            setTo(date ? endOfDay(new Date(date)) : null);
+                        }
+                    }
+                    placeholderText="Select date"
+                    dateFormat="P"
+                    className="border px-3 py-1 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
             </div>
 
             {loading && <p>🔄 Loading history…</p>}
             {error && <p className="text-red-600">⚠️ {error}</p>}
 
-            {!loading && !error && positions.length > 0 ? (
-                <div style={{ height: '100%' }}>
-                    <MapContainer
-                        center={positions[0]}
-                        zoom={13}
-                        style={{ height: '100%', width: '100%', zIndex: 0 }}
-                        whenCreated={map => map.invalidateSize()}
-                    >
-                        <ResizeHandler />
-                        <TileLayer
-                            attribution="© OpenStreetMap contributors"
-                            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                        />
-                        <Polyline positions={positions} weight={4} />
-                        {history.map((point, idx) => {
-                            const pos = [point.latitude, point.longitude];
-                            const icon =
-                                idx === 0 ? latestIcon :
-                                    idx === history.length - 1 ? oldestIcon :
-                                        intermediateIcon;
-
-                            return (
-                                <Marker key={idx} position={pos} icon={icon}>
-                                    <Popup>
-                                        <div className="space-y-1 text-sm">
-                                            <p><strong>📍 Time:</strong> {new Date(point.timestamp).toLocaleString()}</p>
-                                            <p><strong>🧭 Lat:</strong> {point.latitude.toFixed(5)}</p>
-                                            <p><strong>🧭 Lng:</strong> {point.longitude.toFixed(5)}</p>
-                                            <p><strong>🔌 Main:</strong> {point.main}</p>
-                                            <p><strong>🔋 Battery:</strong> {point.battery}</p>
-                                        </div>
-                                    </Popup>
-                                </Marker>
-                            );
-                        })}
-                    </MapContainer>
+            {!selectedDate ?
+                <div className="h-full flex-1 flex items-center justify-center text-gray-500">
+                    🗓️ Please select a date to view location history.
                 </div>
-            ) : (
-                !loading && !error && (
-                    <div className="flex-1 flex items-center justify-center text-gray-500">
-                        No history for the selected period.
+                : !loading && !error && positions.length > 0 ? (
+                    <div style={{ height: '100%' }}>
+                        <MapContainer
+                            center={positions[0]}
+                            zoom={13}
+                            style={{ height: '100%', width: '100%', zIndex: 0 }}
+                            whenCreated={(map) => map.invalidateSize()}
+                        >
+                            <ResizeHandler />
+                            <TileLayer
+                                attribution="© OpenStreetMap contributors"
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                            />
+                            <Polyline positions={positions} weight={4} />
+                            {history.map((point, idx) => {
+                                const pos = [point.latitude, point.longitude];
+                                const icon = idx === 0 ? latestIcon : oldestIcon;
+
+                                if (idx === 0 || idx === history.length - 1) {
+                                    return (
+                                        <Marker key={idx} position={pos} icon={icon}>
+                                            <Popup>
+                                                <div className="space-y-1 text-sm">
+                                                    <p><strong>📍 Time:</strong> {new Date(point.timestamp).toLocaleString()}</p>
+                                                    <p><strong>🧭 Lat:</strong> {point.latitude.toFixed(5)}</p>
+                                                    <p><strong>🧭 Lng:</strong> {point.longitude.toFixed(5)}</p>
+                                                    <p><strong>🔌 Main:</strong> {point.main}</p>
+                                                    <p><strong>🔋 Battery:</strong> {point.battery}</p>
+                                                </div>
+                                            </Popup>
+                                        </Marker>
+                                    );
+                                } else {
+                                    return (
+                                        <CircleMarker
+                                            key={idx}
+                                            center={pos}
+                                            radius={7}
+                                            pathOptions={{ color: 'blue', fillColor: 'lightblue', fillOpacity: 0.9 }}
+                                        >
+                                            <Popup>
+                                                <div className="space-y-1 text-sm">
+                                                    <p><strong>📍 Time:</strong> {new Date(point.timestamp).toLocaleString()}</p>
+                                                    <p><strong>🧭 Lat:</strong> {point.latitude.toFixed(5)}</p>
+                                                    <p><strong>🧭 Lng:</strong> {point.longitude.toFixed(5)}</p>
+                                                    <p><strong>🔌 Main:</strong> {point.main}</p>
+                                                    <p><strong>🔋 Battery:</strong> {point.battery}</p>
+                                                </div>
+                                            </Popup>
+                                        </CircleMarker>
+                                    );
+                                }
+                            })}
+                        </MapContainer>
                     </div>
-                )
-            )}
+                ) : (
+                    !loading && !error && (
+                        <div className="flex-1 flex items-center justify-center text-gray-500">
+                            No history for the selected period.
+                        </div>
+                    )
+                )}
         </div>
     );
-}
+}   
