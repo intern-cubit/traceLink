@@ -21,7 +21,6 @@ const gpsTrackerSchema = new mongoose.Schema(
         }, // assigned user
         vehicleType: {
             type: String,
-            enum: ["car", "bus", "truck", "scooty", "bike"],
             default: "car",
         },
     },
