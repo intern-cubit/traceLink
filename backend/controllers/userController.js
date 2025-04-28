@@ -71,7 +71,7 @@ export const getLiveLocation = async (req, res) => {
                 .json({ message: "No live data for this tracker" });
         const diff = Date.now() - new Date(latest.timestamp).getTime();
         const status = diff <= 60000 ? "online" : "offline";
-        res.json({ latest, status });
+        res.json({ latest, status, diff });
     } catch (error) {
         console.error("Live Location error:", error);
         res.status(500).json({ message: "Server Error" });

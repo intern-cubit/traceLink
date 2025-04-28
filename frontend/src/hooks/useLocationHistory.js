@@ -37,7 +37,6 @@ export function useLocationHistory(trackerId, from, to) {
                 );
 
                 const data = await res.json();
-                console.log("History data:", data); 
                 if (!res.ok)
                     throw new Error(data.message || "Failed to fetch history");
                 setHistory(data);

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginStart, loginSuccess, loginFailure } from "../features/authSlice";
 // import { initSocket } from "../socket";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginForm() {
     const [form, setForm] = useState({ identifier: "", password: "" });
@@ -44,13 +44,13 @@ export default function LoginForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg space-y-6"
+            className="w-full max-w-md bg-black p-8 rounded-2xl shadow-lg space-y-6 border border-amber-400"
         >
-            <h2 className="text-2xl font-bold text-center text-gray-800">Sign In</h2>
-            {error && <div className="text-red-600 text-sm text-center">{error}</div>}
+            <h2 className="text-2xl font-bold text-center text-amber-400">Sign In</h2>
+            {error && <div className="text-red-400 text-sm text-center">{error}</div>}
 
             <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">
+                <label className="block mb-1 font-medium text-sm text-white">
                     Email or Username
                 </label>
                 <input
@@ -59,12 +59,12 @@ export default function LoginForm() {
                     onChange={handleChange}
                     placeholder="email or username"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-amber-400 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
             </div>
 
             <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">
+                <label className="block mb-1 font-medium text-sm text-white">
                     Password
                 </label>
                 <input
@@ -74,22 +74,30 @@ export default function LoginForm() {
                     onChange={handleChange}
                     placeholder="password"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-amber-400 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
+                <div className="text-right mt-2">
+                    <Link
+                        to="/forgot-password"
+                        className="text-sm text-amber-400 hover:text-amber-300 hover:underline font-medium"
+                    >
+                        Forgot Password?
+                    </Link>
+                </div>
             </div>
 
             <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 px-4 rounded-lg transition duration-300"
             >
                 Login
             </button>
 
-            <p className="text-center text-sm text-gray-600">
-                Don’t have an account?{" "}
-                <a href="/register" className="text-blue-600 hover:underline font-medium">
+            <p className="text-center text-sm text-white">
+                Don't have an account?{" "}
+                <Link to="/register" className="text-amber-400 hover:text-amber-300 hover:underline font-medium">
                     Sign up
-                </a>
+                </Link>
             </p>
         </form>
     );

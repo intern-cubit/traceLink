@@ -3,3 +3,14 @@
 @tailwind utilities;
 
 /* "dev": "concurrently \"vite\" \"node ./src/deviceLocationSimulator.js\"", */
+
+.leaflet-pane,
+.leaflet-map-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+    z-index: 0 !important;
+}

@@ -7,6 +7,8 @@ import RegistrationPage from "./pages/RegistrationPage";
 import LiveTrackerMap from "./components/LiveTrackerMap";
 import { useSelector } from "react-redux";
 import AdminDashboard from "./pages/AdminDashboard";
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
     const isAuth = useSelector((s) => s.auth.isAuthenticated);
@@ -21,6 +23,14 @@ function App() {
                 <Route
                     path="/register"
                     element={<RegistrationPage />}
+                />
+                <Route
+                    path="/reset-password/:token"
+                    element={<ResetPassword />}
+                />
+                <Route 
+                    path="forgot-password"
+                    element={<ForgotPassword />}
                 />
                 <Route
                     path="/dashboard"

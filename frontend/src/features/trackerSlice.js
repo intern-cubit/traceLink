@@ -17,33 +17,63 @@ const trackerSlice = createSlice({
             state.error = action.payload;
         },
         setTrackers: (state, action) => {
-            state.trackers = action.payload;
+            if (Array.isArray(action.payload)) {
+                state.trackers = action.payload;
+                console.log(action.payload);
+            } else {
+                console.error("Payload is not an array:", action.payload);
+            }
         },
+
         selectTracker: (state, action) => {
             state.selectedTrackerId = action.payload;
         },
         updateTrackerLocation: (state, action) => {
-            const { deviceId, latitude, longitude, timestamp, status } =
-                action.payload;
+            const t = localStorage.getItem("trackers");
+            if (t) {
+                const trackers = JSON.parse(t);
+                state.trackers = trackers;
+            }
+            const {
+                deviceId,
+                latitude,
+                longitude,
+                timestamp,
+                status,
+                battery,
+                main,
+                diff,
+            } = action.payload;
 
-            const trackerIndex = state.trackers.findIndex((t) => {
-                t.tracker._id === deviceId;
-            });
+            console.log(state.trackers); // Log the current state of trackers
+            const trackerIndex = state.trackers.findIndex(
+                (tracker) => tracker.tracker._id === deviceId
+            );
 
             if (trackerIndex !== -1) {
-                const tracker = state.trackers[trackerIndex];
+                const updatedTrackers = state.trackers.map((tracker) => {
+                    if (tracker.tracker._id === deviceId) {
+                        console.log("hello"); // This will log when we are updating the correct tracker
+                        return {
+                            ...tracker,
+                            latest: {
+                                location: { latitude, longitude, timestamp },
+                            },
+                            status,
+                            battery,
+                            main,
+                            timestamp,
+                            diff,
+                            location: { latitude, longitude },
+                        };
+                    }
+                    return tracker; // If tracker doesn't match, return it unchanged
+                });
 
-                tracker.latest = {
-                    ...tracker.latest,
-                    location: {
-                        latitude,
-                        longitude,
-                        timestamp,
-                    },
-                };
+                state.trackers = updatedTrackers; // Update the state with the new tracker array
 
-                tracker.status = status;
-                state.trackers[trackerIndex] = tracker;
+                // Log updated trackers after update
+                console.log("Trackers after update:", state.trackers);
             } else {
                 console.warn(`Tracker with ID ${deviceId} not found in state.`);
             }

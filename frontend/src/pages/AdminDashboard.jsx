@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Trash2, Plus } from "lucide-react";
+import { Trash2, Plus, Pencil } from "lucide-react";
 import toast from "react-hot-toast";
 
 const generateActivationKey = (imei, existingKeys = new Set()) => {
@@ -42,8 +42,12 @@ const AdminDashboard = () => {
     const [trackers, setTrackers] = useState([]);
     const [showAddModal, setShowAddModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+
     const [imei, setImei] = useState("");
+    const [editImei, setEditImei] = useState("");
     const [deleteId, setDeleteId] = useState(null);
+    const [editTracker, setEditTracker] = useState(null);
 
     const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000";
     const baseURL = `${BACKEND_URL}/api/admin`;
@@ -113,6 +117,43 @@ const AdminDashboard = () => {
         }
     };
 
+    const handleEditClick = (tracker) => {
+        setEditTracker(tracker);
+        setEditImei(tracker.deviceId);
+        setShowEditModal(true);
+    };
+
+    const handleUpdateDevice = async () => {
+        if (!/^\d{15}$/.test(editImei)) {
+            toast.error("IMEI must be 15 digits");
+            return;
+        }
+
+        const key = generateActivationKey(editImei, new Set(trackers.map(t => t.activationKey).filter(k => k !== editTracker.activationKey)));
+        if (!key) {
+            toast.error("Failed to regenerate activation key");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${baseURL}/gps-trackers/${editTracker._id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                body: JSON.stringify({ deviceId: editImei, activationKey: key }),
+            });
+            if (!response.ok) throw new Error();
+            toast.success("Tracker updated");
+            setShowEditModal(false);
+            setEditTracker(null);
+            fetchTrackers();
+        } catch {
+            toast.error("Failed to update tracker");
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto p-6 space-y-6">
             <div className="flex justify-between items-center">
@@ -147,7 +188,11 @@ const AdminDashboard = () => {
                                         {t.activationKey}
                                     </p>
                                 </div>
-                                <div className="flex justify-end mt-4">
+                                <div className="flex justify-end mt-4 space-x-2">
+                                    <Pencil
+                                        className="text-blue-600 cursor-pointer hover:text-blue-800 transition"
+                                        onClick={() => handleEditClick(t)}
+                                    />
                                     <Trash2
                                         className="text-red-600 cursor-pointer hover:text-red-800 transition"
                                         onClick={() => {
@@ -195,7 +240,7 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
+            {/* Delete Modal */}
             {showDeleteModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white p-6 rounded-xl w-80 space-y-4 shadow-lg">
@@ -213,6 +258,39 @@ const AdminDashboard = () => {
                                 onClick={confirmDelete}
                             >
                                 Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Modal */}
+            {showEditModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded-xl w-96 space-y-4 shadow-lg">
+                        <h3 className="text-lg font-bold">Edit Device</h3>
+                        <input
+                            type="text"
+                            value={editImei}
+                            onChange={(e) => setEditImei(e.target.value)}
+                            placeholder="15-digit IMEI"
+                            className="border px-3 py-2 rounded w-full"
+                        />
+                        <div className="flex justify-end space-x-2">
+                            <button
+                                className="bg-gray-300 px-4 py-2 rounded"
+                                onClick={() => {
+                                    setShowEditModal(false);
+                                    setEditTracker(null);
+                                }}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                                onClick={handleUpdateDevice}
+                            >
+                                Update
                             </button>
                         </div>
                     </div>
