@@ -118,7 +118,12 @@ export default function LiveTrackerMap() {
             name: 'Satellite',
             url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             attribution: 'Tiles &copy; Esri'
-        }
+        },
+        {
+            name: 'Standard',
+            url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            attribution: '&copy; OpenStreetMap contributors'
+        },
     ];
 
     const [currentLayerIndex, setCurrentLayerIndex] = useState(0);

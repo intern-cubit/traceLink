@@ -23,10 +23,10 @@ export default function AddDeviceForm() {
         try {
             const response = await fetch(`${BACKEND_URL}/api/user/assign-tracker`, {
                 method: "POST",
-                headers: { 
+                headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`,
                     "Content-Type": "application/json"
-                 },
+                },
                 body: JSON.stringify(form),
             });
 
@@ -46,13 +46,17 @@ export default function AddDeviceForm() {
     return (
         <form
             onSubmit={handleSubmit}
-            className="w-full max-w-md bg-white p-8 rounded-2xl shadow-lg space-y-6"
+            className="w-full max-w-md bg-black p-8 rounded-2xl shadow-lg space-y-6 border border-amber-400"
         >
-            <h2 className="text-2xl font-bold text-center text-gray-800">Add a New Device</h2>
-            {message && <div className="text-center text-sm text-red-600">{message}</div>}
+            <h2 className="text-2xl font-bold text-center text-amber-400">Add a New Device</h2>
+            {message && (
+                <div className={`text-center text-sm ${message.startsWith('🎉') ? 'text-green-400' : 'text-red-400'}`}>
+                    {message}
+                </div>
+            )}
 
             <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">
+                <label className="block mb-1 font-medium text-sm text-white">
                     Device ID
                 </label>
                 <input
@@ -61,12 +65,12 @@ export default function AddDeviceForm() {
                     onChange={handleChange}
                     placeholder="1234567890"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-amber-400 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
             </div>
 
             <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">
+                <label className="block mb-1 font-medium text-sm text-white">
                     Activation Key
                 </label>
                 <input
@@ -75,12 +79,12 @@ export default function AddDeviceForm() {
                     onChange={handleChange}
                     placeholder="72F7-36C1-A831"
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-amber-400 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
             </div>
 
             <div>
-                <label className="block mb-1 font-medium text-sm text-gray-700">
+                <label className="block mb-1 font-medium text-sm text-white">
                     Vehicle Type
                 </label>
                 <input
@@ -89,13 +93,13 @@ export default function AddDeviceForm() {
                     onChange={handleChange}
                     placeholder="Bike, Car, UFO..."
                     required
-                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2 border border-amber-400 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
             </div>
 
             <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
+                className="w-full bg-amber-500 hover:bg-amber-600 text-black font-semibold py-2 px-4 rounded-lg transition duration-300"
             >
                 Assign Tracker
             </button>

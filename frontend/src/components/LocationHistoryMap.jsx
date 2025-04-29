@@ -99,15 +99,20 @@ export default function LocationHistoryMap({ trackerId }) {
     const cycleMapLayer = () => {
         const layers = [
             {
-                name: 'Standard',
-                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                attribution: '&copy; OpenStreetMap contributors'
+                name: 'Dark',
+                url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+                attribution: '&copy; OpenStreetMap contributors &copy; Carto'
             },
             {
                 name: 'Satellite',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
                 attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-            }
+            },
+            {
+                name: 'Standard',
+                url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                attribution: '&copy; OpenStreetMap contributors'
+            },
         ];
 
         const currentIndex = layers.findIndex(layer => layer.name === mapLayer.name);
@@ -264,7 +269,7 @@ export default function LocationHistoryMap({ trackerId }) {
                         zoom={13}
                         style={{ height: '100%', width: '100%' }}
                         zoomControl={false}
-                        
+
                         whenCreated={(map) => {
                             setMapRef(map);
                             map.invalidateSize();
