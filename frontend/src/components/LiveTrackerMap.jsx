@@ -111,8 +111,8 @@ export default function LiveTrackerMap() {
     const mapLayers = [
         {
             name: 'Dark',
-            url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
-            attribution: '&copy; Stadia Maps, &copy; OpenMapTiles &copy; OpenStreetMap contributors'
+            url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+            attribution: '&copy; OpenStreetMap contributors &copy; Carto'
         },
         {
             name: 'Satellite',
@@ -120,6 +120,7 @@ export default function LiveTrackerMap() {
             attribution: 'Tiles &copy; Esri'
         }
     ];
+
     const [currentLayerIndex, setCurrentLayerIndex] = useState(0);
     const currentLayer = mapLayers[currentLayerIndex];
 
