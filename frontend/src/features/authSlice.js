@@ -13,7 +13,7 @@ const authSlice = createSlice({
         isAuthenticated: !!token,
         user,
         loading: false,
-        isAdmin: user ? user.email == "leelaavinash24@gmail.com" : false,
+        isAdmin: user ? user.email == "avinashb927@gmail.com" : false,
     },
     reducers: {
         loginStart: (state) => {
