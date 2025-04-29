@@ -12,41 +12,38 @@ import ForgotPassword from "./pages/ForgotPassword";
 
 function App() {
     const isAuth = useSelector((s) => s.auth.isAuthenticated);
+    const isAdmin = useSelector((s) => s.auth.isAdmin);
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<LandingPage />} />
+                <Route path="/" element={isAuth ? <Navigate to={"/dashboard"} /> : <LandingPage />} />
                 <Route
                     path="/login"
-                    element={<LoginPage />}
+                    element={!isAuth ? <LoginPage /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <Navigate to={"/dashboard"} />}
                 />
                 <Route
                     path="/register"
-                    element={<RegistrationPage />}
+                    element={!isAuth ? <RegistrationPage /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <Navigate to={"/dashboard"} />}
                 />
                 <Route
                     path="/reset-password/:token"
-                    element={<ResetPassword />}
+                    element={!isAuth ? <ResetPassword /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <Navigate to={"/dashboard"} />}
                 />
-                <Route 
+                <Route
                     path="forgot-password"
-                    element={<ForgotPassword />}
+                    element={!isAuth ? <ForgotPassword /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <Navigate to={"/dashboard"} />}
                 />
                 <Route
                     path="/dashboard"
-                    element={<Dashboard />}
-                />
-                <Route
-                    path="/live-location"
-                    element={<LiveTrackerMap />}
+                    element={!isAuth ? <Navigate to={"/login"} /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <Dashboard />}
                 />
                 <Route
                     path="/add-device"
-                    element={<AddDevicePage />}
+                    element={!isAuth ? <Navigate to={"/login"} /> : isAdmin ? <Navigate to={"/admin/dashboard"} /> : <AddDevicePage />}
                 />
                 <Route
                     path="/admin/dashboard"
-                    element={ <AdminDashboard /> }
+                    element={!isAuth ? <Navigate to={"/login"} /> : isAdmin ? <AdminDashboard /> : <Navigate to={"/dashboard"} />}
                 />
             </Routes>
         </BrowserRouter>
